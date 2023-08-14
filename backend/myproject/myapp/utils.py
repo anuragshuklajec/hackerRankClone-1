@@ -1,6 +1,8 @@
 import os
 import subprocess
 import uuid
+import json
+from django.core import serializers
 
 
 
@@ -12,7 +14,7 @@ def createFile():
         os.makedirs(folder)
     return os.path.join(folder, f"{uuid.uuid1()}")
 
-def runCode(path, arguments):
+def runCode(path, arguments, test):
     directory = os.path.dirname(path)
     fileNameWithoutExtension = os.path.basename(path)
     docker_command = [
@@ -30,13 +32,18 @@ def runCode(path, arguments):
     
     process = subprocess.Popen(docker_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     stdout, stderr = process.communicate()
-
-    res = {"status": False, "message": None, "time": None}
+    
+    expectedInput = test.expected_output.strip()
+    res = {"error": None, "output": None, "success": False, "test": json.loads(serializers.serialize("json", [test]))[0]["fields"]}
     if stderr:
-        res["message"] = stderr
+        res["error"] = stderr
     else:
-        res["status"] = True
-        res["message"] = stdout
+        res["output"] = stdout
+        if(stdout.strip() == expectedInput):
+            res["success"] = True
+        else:
+             res["success"] = False
+        
 
     os.remove(f"{path}.cpp")
     if os.path.exists(f"{path}.out"):

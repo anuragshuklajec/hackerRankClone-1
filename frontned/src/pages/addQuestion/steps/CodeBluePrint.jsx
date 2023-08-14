@@ -110,10 +110,9 @@ const DataTypes = [
 
 
 const boilerPlate = "#include <iostream>\nusing namespace std;\n\nint test() {\n  //Write your logic here\n}"
-function CodeBluePrint({formData, set, setFormData}) {
+function CodeBluePrint({formData, set, setFormData, setQuestionPk}) {
   console.log({formData})
-  const [codeStarter, setCodeStarter] = useState(boilerPlate)
-  const [returntype, setReturnType] = useState("")
+  const [returntype, setReturnType] = useState(returntypes[0].key)
   const [parameters , setParameters ] = useState([])
 
   const handleParamChange = (e, index) => {
@@ -136,7 +135,9 @@ function CodeBluePrint({formData, set, setFormData}) {
   const handleSubmit = async () => {
     console.log({formData})
     try {
-        const {data} = await publicRequest.post("/questions", formData)
+        const {data} = await publicRequest.post("/questions", {...formData, parameters})
+        if(data.sucess !== true) return 
+        setQuestionPk(data.message.pk)
         set(p => p+1)
     } catch (error) {
         console.log(error)

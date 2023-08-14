@@ -27,6 +27,7 @@ class Test(models.Model):
 
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    name= models.TextField()
     input_data = models.TextField()
     expected_output = models.TextField()
     score = models.IntegerField()

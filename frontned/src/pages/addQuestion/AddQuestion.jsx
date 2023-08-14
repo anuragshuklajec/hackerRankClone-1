@@ -54,7 +54,8 @@ const Steps = [
 ]
 
 function AddQuestion() {
-    const [activeStep, setActiveStep] = useState(2)
+    const [questionPk, setQuestionPk] = useState(null)
+    const [activeStep, setActiveStep] = useState(0)
     const [formData, setFormData] = useState({title: "", recommended_time: 0, difficulty: "Easy", description: "", starterCode: "#include <iostream>\nusing namespace std;\n\nint test() {\n  //Write your logic here\n}"})
     const ActiveComp = Steps[activeStep].component
 
@@ -72,7 +73,7 @@ function AddQuestion() {
             })}
         </StepsNav>
         <MainSection>
-            <ActiveComp set={setActiveStep} setFormData={setFormData} formData={formData}  />  
+            <ActiveComp set={setActiveStep} setFormData={setFormData} formData={formData}  setQuestionPk={setQuestionPk} questionPk={questionPk} />  
         </MainSection>
 
     </Container>

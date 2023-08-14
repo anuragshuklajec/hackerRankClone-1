@@ -27,7 +27,6 @@ const Button = styled.button`
       background-color: #e7d39a !important;
     }
 `
-
 function formatTime(timeInSeconds) {
   const seconds = timeInSeconds % 60;
   const minutes = Math.floor((timeInSeconds / 60) % 60);
@@ -36,41 +35,16 @@ function formatTime(timeInSeconds) {
   return `${hours} hours, ${minutes} minutes, ${seconds.toFixed(2)} seconds`;
 }
 
-
-
-
-const Editor = () => {
-  const editorRef = useRef(null);
-  const [code, setcode] = useState(`#include <iostream>\nint main() {\n    std::cout << "Hello World!";\n    return 0;\n}`);
-  const [argument, setArgument] = useState("[]")
-  const [withTIme, setWithTime] = useState(false)
-  const [response, setResponse] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-
+const Editor = ({code, setcode}) => {
   const handleChange = (newValue) => {
     setcode(newValue);
   };
 
-  const handleSubmit = async () => {
-    setIsLoading(true)
-    try {
-      const { data } = await axios.post(`http://localhost:8000/run`, {
-        code,
-        withTime: withTIme,
-        arguments: argument.split(",").join("\n")
-      });
-      setResponse(data);
-    } catch (error) {
-      console.log(error)
-      // setError("Internal server error");
-    }
-    setIsLoading(false)
-  };
+
 
   return (
     <div className="container">
       <AceEditor
-        ref={editorRef}
         width="100%"
         value={code}
         mode="c_cpp"
@@ -87,31 +61,6 @@ const Editor = () => {
           useWorker: false,
         }}
       />
-      <br />
-      With Time : <input type="checkbox" checked={withTIme} onChange={e =>setWithTime(e.target.checked)} /><br/>
-      <br />
-      Arguments : <input type="text" value={argument} onChange={e => setArgument(e.target.value)} /><br/><br />
-      <br />
-      <Button onClick={handleSubmit} disabled={isLoading}  >{isLoading ? <><Spinner size={20} /> Processing</> : "Submit" }</Button>
-  
-
-      {response && (
-        <div className="response">
-          {response.status ? (
-            <div >
-              <h1>Success</h1> {response.time && <small>Time Took : {+response.time} s </small>}
-              <pre className="success message">{response.message}</pre>
-            </div>
-          ) : (
-            <div >
-              <h1>Failed</h1>
-              <div className="failed message">
-                <pre>{response.message}</pre>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

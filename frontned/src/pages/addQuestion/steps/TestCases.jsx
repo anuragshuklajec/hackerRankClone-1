@@ -1,6 +1,10 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import styled from 'styled-components';
 import AddEditTests from '../components/AddEditTests';
+import {AiFillDelete} from "react-icons/ai"
+import {BiSolidEdit} from "react-icons/bi"
+import { publicRequest } from '../../../api';
+import { useNavigate } from "react-router-dom"
 
 const Container = styled.div`
     padding: 2rem 1rem;
@@ -38,6 +42,8 @@ const Title = styled.h1`
 const StyledTable = styled.table`
     width: 100%;
     border-collapse: collapse;
+    border: 1px solid #E7E7E7;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     th,
     td {
         padding: 0.5rem;
@@ -51,10 +57,49 @@ const StyledTable = styled.table`
         color: #555;
     }
 `;
+const IconsContainer = styled.div`
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    >svg{
+        font-size: 1.3rem;
+        cursor: pointer;
+    }
+`
 
-function TestCases() {
-    const [tests, setTests] = useState([{name: "test", input: "1,2,3,4", output: "10", score: "10"}])
-    const [isOpen, setIsOpen] = useState(true)
+const BtnWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    button{
+        border: none;
+        width: max-content; 
+        margin-top: 2rem;
+    }
+`
+
+function TestCases({questionPk}) {
+    const navigate = useNavigate()
+    const [tests, setTests] = useState([])
+    const [isOpen, setIsOpen] = useState(false)
+
+    const [editIndex, setEditIndex] = useState(null)
+
+    const handleDelete = (index) => setTests(p => p.filter((e, i) => index !== i))
+    
+
+    useEffect(() => {
+        if(isOpen === false) setEditIndex(null)
+    },[isOpen])
+
+    const handleSubmit = async () => {
+        try {
+            const {data} = await publicRequest.post("/testCase", {tests, questionId: questionPk})
+            navigate("/questions")
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
       <>
         <Container>
@@ -66,7 +111,7 @@ function TestCases() {
             </TopSection>
 
             <MainSection>
-                <button className='primaryBtn' style={{border: "none", width: "max-content"}} onClick={() => setIsOpen(true)} >Add Question</button>
+                <button className='primaryBtn' style={{border: "none", width: "max-content"}} onClick={() => setIsOpen(true)} >Add Tests</button>
                 <StyledTable>
                     <thead>
                         <tr>
@@ -78,20 +123,26 @@ function TestCases() {
                         </tr>
                     </thead>
                     <tbody> 
-                        {tests.map(e => {
+                        {tests.map((e, i) => {
                           return <tr>
-                            <th>{e.name}</th>
-                            <th>{e.score}</th>
-                            <th>{new Blob([e.input]).size}</th>
-                            <th>{new Blob([e.output]).size}</th>
-                            <th>Actions</th>
+                            <td>{e.name}</td>
+                            <td>{e.score}</td>
+                            <td>{new Blob([e.input]).size}</td>
+                            <td>{new Blob([e.output]).size}</td>
+                            <td>
+                                <IconsContainer>
+                                    <BiSolidEdit onClick={() => {setIsOpen(true); setEditIndex(i)}} />
+                                    <AiFillDelete onClick={() => handleDelete(i)} />
+                                </IconsContainer>
+                            </td>
                           </tr>
                         })}
                     </tbody>
                 </StyledTable>
             </MainSection>
+            <BtnWrapper><button className='primaryBtn' onClick={handleSubmit} >Save Test</button></BtnWrapper>
         </Container>
-        <AddEditTests isOpen={isOpen} setIsOpen={setIsOpen} tests={tests} setTests={setTests} />
+        <AddEditTests isOpen={isOpen} setIsOpen={setIsOpen} tests={tests} setTests={setTests} editIndex={editIndex} setEditIndex={setEditIndex} />
       </>
     );
 }

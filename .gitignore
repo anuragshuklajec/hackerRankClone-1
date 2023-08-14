@@ -15,6 +15,8 @@
 
 /backend/apienv/*
 /backend/myproject/myapp/temp/*
+/backend/myproject/myapp/__pycache__/*
+/backend/myproject/myapp/migrations/*
 
 # Editor directories and files
 .vscode/*

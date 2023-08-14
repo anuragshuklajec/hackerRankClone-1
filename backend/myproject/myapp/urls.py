@@ -23,5 +23,6 @@ def sayHi(request):
 
 urlpatterns = [
     path("run", run),
-    path("questions", ManageQuestions)
+    path("questions", ManageQuestions),
+    path("testCase", ManageTestCases)
 ]
