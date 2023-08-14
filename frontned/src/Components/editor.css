@@ -1,0 +1,85 @@
+/* Global styles */
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    background-color: #f2f2f2;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  .container {
+    width: 1200px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+  }
+  
+  /* Submit button styles */
+
+  button:hover {
+    background-color: #d39200;
+  }
+  
+  /* Language select styles */
+  select {
+    font-size: 16px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-left: 10px;
+    color: #555;
+    background-color: #fff;
+  }
+  
+  /* Response message styles */
+  .response {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .message {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  
+  .response .success {
+    background-color: #dff0d8;
+    color: #3c763d;
+  }
+  
+  .response .failed {
+    background-color: #f2dede;
+    color: #a94442;
+  }
+
+
+  /*ace editor*/
+  .ace_scrollbar::-webkit-scrollbar {
+    height: 7px;
+    width: 7px;
+    }
+
+.ace_scrollbar::-webkit-scrollbar-track
+{
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #272822; /* Matches ace monokai */
+    border-radius: 10px;
+}
+
+.ace_scrollbar::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+    border-radius: 10px;
+}
+
+#editor {
+    width: 100%;
+
+}
+  
