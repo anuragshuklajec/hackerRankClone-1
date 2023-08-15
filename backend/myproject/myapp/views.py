@@ -75,6 +75,7 @@ def ManageTestCases(req):
 @csrf_exempt 
 def run(req):
     if req.method == "POST":
+        response = {"success": True, "message": None}
         try:
             data = json.loads(req.body)
             if not data["questionId"]:
@@ -83,7 +84,7 @@ def run(req):
             question = Question.objects.get(pk = data["questionId"])
             tests = TestCase.objects.filter(question=question)
 
-            result = []
+            testResults = []
             for test in tests:
                 codePath = createFile()  
                 with open(f"{codePath}.cpp", "w") as file:
@@ -98,9 +99,18 @@ def run(req):
                         file.write(joined_input)
 
                 res = runCode(codePath, joined_input, test)
-                result.append(res)
-
-            return JsonResponse({"success": True, "message": result}, status=200)
+                if res["compiled"] is False:
+                    response["success"] = False
+                    response["message"] = {
+                        "compiled": False,
+                        "error": res["error"]
+                    }
+                    break
+                else:
+                    testResults.append(res)
+                    response["message"] = testResults
+                
+            return JsonResponse(response, status=200)
         except Exception as e:
             print("Exception:", e)       
             print(traceback.format_exc())                           

@@ -41,7 +41,8 @@ function ResultComp({response}) {
                 return (
                     <TestContainer>
                         <TopSection>
-                            <p>{e.test.name} | Points : {e.test.score}</p><Status success={e.success} >{e.success ? "Success" : "Failed"}</Status>
+                            <p>{e.test.name} | Points : {e.test.score} {e.error && "|  Runtime error"}</p>
+                            <Status success={e.success} >{e.success ? "Success" : "Failed"}</Status>
                         </TopSection>
                         <BottomSection>
                             {!e.success  &&<pre className='response failed' >{e.error ? e.error : e.output}</pre >}
@@ -52,10 +53,10 @@ function ResultComp({response}) {
             })}
             </div>
         ) : (
-            <div >
-            <h1>Failed</h1>
-            <div className="failed message">
-                <pre>error hai</pre>
+            <div className="response">
+            <h1>Failed {response.message.compiled ? "Internal server Error" : "Compiled Error"}</h1>
+            <div>
+                <pre className="response failed">{response.message.error}</pre>
             </div>
             </div>
         )}

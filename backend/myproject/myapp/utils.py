@@ -32,9 +32,16 @@ def runCode(path, arguments, test):
     
     process = subprocess.Popen(docker_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     stdout, stderr = process.communicate()
-    
+
+
+ 
     expectedInput = test.expected_output.strip()
-    res = {"error": None, "output": None, "success": False, "test": json.loads(serializers.serialize("json", [test]))[0]["fields"]}
+    res = {"error": None, "output": None, "success": False, "compiled": False, "test": json.loads(serializers.serialize("json", [test]))[0]["fields"]}
+
+    if os.path.exists(f"{path}.out"): 
+        res["compiled"] = True
+        os.remove(f"{path}.out")
+
     if stderr:
         res["error"] = stderr
     else:
@@ -46,8 +53,6 @@ def runCode(path, arguments, test):
         
 
     os.remove(f"{path}.cpp")
-    if os.path.exists(f"{path}.out"):
-        os.remove(f"{path}.out")
     if os.path.exists(f"{path}.txt"):
         os.remove(f"{path}.txt")
 
