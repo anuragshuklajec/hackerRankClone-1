@@ -37,7 +37,7 @@ function ResultComp({response}) {
         {response.success ? (
             <div >
             <h1>Success</h1>
-            {response.message.map(e => {
+            {response.message?.map(e => {
                 return (
                     <TestContainer>
                         <TopSection>

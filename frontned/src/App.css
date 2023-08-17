@@ -31,6 +31,11 @@ time, mark, audio, video {
 	border: 0;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 
 
 article, aside, details, figcaption, figure, 
@@ -106,6 +111,10 @@ table {
     font-weight: 500;
     border-radius: 0.2rem;
     cursor: pointer;
+}
+
+.noBorder{
+  border: none;
 }
 .btnSmall{
   padding: 6px 10px;

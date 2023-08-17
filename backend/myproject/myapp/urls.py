@@ -18,8 +18,6 @@ from django.urls import path,include
 from django.http import HttpResponse
 from .views import *
 
-def sayHi(request):
-    return HttpResponse("Hi")
 
 urlpatterns = [
     path("run", run),

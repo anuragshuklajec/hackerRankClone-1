@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Editor from '../../Components/Editor'
+import AceEditorComponent from '../../Components/AceEditor'
 import { publicRequest } from '../../api';
 import { useLocation } from 'react-router-dom';
 import styled from "styled-components"
 import Spinner from '../../Components/Spinner';
 import ResultComp from './ResultComp';
+import CodeMirrorEditor from '../../Components/CodeMirroeEditor';
 
 const Container = styled.div`
     margin: 1rem 0;
@@ -30,7 +31,9 @@ const Left = styled.div`
 `
 
 const Right = styled.div`
-    
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 `
 const BtnWrapper = styled.div`
     display: flex;
@@ -68,6 +71,7 @@ function SingleQuestionPage() {
             questionId,
             code,
           });
+          console.log({data})
           setResponse(data);
         } catch (error) {
           console.log(error)
@@ -85,9 +89,10 @@ function SingleQuestionPage() {
                         <div dangerouslySetInnerHTML={{ __html: questionData?.description }} />
                     </Left>
                     <Right>
-                        <Editor code={code} setcode={setcode} />
+                        {/* <AceEditorComponent code={code} setcode={setcode} /> */}
+                        <CodeMirrorEditor code={code} setcode={setcode} />
                         <BtnWrapper>
-                            <button className='primaryBtn'  onClick={handleSubmit}   >{isLoading ? <><Spinner size={20} /> Processing</> : "Submit" }</button>
+                            <button style={{display: 'flex', alignItems: "center", gap: "0.5rem"}}  className='primaryBtn'  onClick={handleSubmit}   >{isLoading ? <><Spinner size={20} /> Processing</> : "Submit" }</button>
                         </BtnWrapper>
                     </Right>
                 </TopSection>

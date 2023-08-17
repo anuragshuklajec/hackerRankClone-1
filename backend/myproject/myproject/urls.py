@@ -23,5 +23,6 @@ def sayHi(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("myapp.urls"))
+    path("", include("myapp.urls")),
+    path("authentication/", include("authentication.urls")),
 ]

@@ -8,8 +8,10 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { generatecode } from '../../../utils/generateCode';
 import { publicRequest } from '../../../api';
+import CodeMirrorEditor from '../../../Components/CodeMirroeEditor';
 
 const Container = styled.div`
+    min-height: 600px;
     padding: 2rem 1rem;
     display: flex;
     gap: 1.5rem;
@@ -21,7 +23,6 @@ const Container = styled.div`
 
 
 const MainSection = styled.div`
-
 `
 const InputWrapper = styled.div`
     display: flex;
@@ -170,14 +171,7 @@ function CodeBluePrint({formData, set, setFormData, setQuestionPk}) {
         </div>
         <button onClick={handleGenerateCode} className='btnSmall'  >Generate Code</button>
       </MainSection>
-      <AceEditor
-        mode="c_cpp"
-        theme="github"
-        onChange={e => setFormData(p => ({...p, starterCode: e}))}
-        name="UNIQUE_ID_OF_DIV"
-        value={formData.starterCode}
-        editorProps={{ $blockScrolling: true }}
-      />
+      <CodeMirrorEditor code={formData.starterCode} setcode={e => setFormData(p => ({...p, starterCode: e}))} />
     </Container>
     <BtnWrapper>
         <button className='primaryBtn' onClick={handleSubmit} >Save Question & Proceed</button>

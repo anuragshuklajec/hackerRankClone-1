@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
+from django.db.models.functions import Coalesce
+from django.db.models import Max,Value
 
 # Create your models here.
 class StrategyName(models.Model):
@@ -16,19 +19,37 @@ class Question(models.Model):
     description = models.TextField()
     difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES)
     recommended_time = models.IntegerField(blank= False)
-    inputs = models.TextField(blank= False)
+    inputs = models.TextField(null=False)
     starter_code = models.TextField(blank = False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
 class Test(models.Model):
     title = models.CharField(max_length=255)
+    role = models.TextField(blank=False, default=None)
+    attempted = models.IntegerField(default=0)
+    completed = models.IntegerField(default=0)
+    public= models.BooleanField(default=False)
     questions = models.ManyToManyField(Question, related_name='tests')
+    duration = models.IntegerField(default=40)
 
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    name= models.TextField()
+    name= models.TextField(default = "")
     input_data = models.TextField()
     expected_output = models.TextField()
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Clients(models.Model):
+    
+    isAdmin = models.BooleanField(db_column="IsAdmin",null=False,default=False)
+    password = models.CharField(db_column='Password', max_length=250,null=False)  # Field name made lowercase.
+    firstname = models.CharField(db_column='FirstName', max_length=100,null=False,default='')  # Field name made lowercase.
+    lastname = models.CharField(db_column='LastName', max_length=100,null=False,default='')  # Field name made lowercase.
+    email = models.CharField(db_column='Email', max_length=100,unique=True,null=False)  # Field name made lowercase.
+    isdisabled = models.BooleanField(db_column='isDisabled',default=False) # TO DISABLE OR ENABLE ACCOUNT LOGIN 
+    createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True)  # Field name made lowercase.
+    updatedate = models.TimeField(db_column='UpdateDate',auto_now=True)
+
+
