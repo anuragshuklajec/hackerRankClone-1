@@ -8,6 +8,7 @@ import NavBar from './Components/NavBar'
 import TestsPage from './pages/Tests/TestsPage'
 import Auth from './pages/auth/Auth'
 import { useSelector } from 'react-redux'
+import ManageTest from './pages/manageTest/ManageTest'
 
 const IsAdmin = () => { 
   const user = useSelector(p => p.user).user
@@ -30,6 +31,7 @@ function App() {
         <Route element={<IsAdmin/>}>
           <Route path="/addquestion" element={<AddQuestion/>}/>
           <Route path="/tests" element={<TestsPage/>}/>
+          <Route path="/test/manage/:id" element={<ManageTest/>}/>
         </Route>
 
         <Route element={<IsUser/>}>

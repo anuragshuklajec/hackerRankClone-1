@@ -30,8 +30,16 @@ class Test(models.Model):
     attempted = models.IntegerField(default=0)
     completed = models.IntegerField(default=0)
     public= models.BooleanField(default=False)
-    questions = models.ManyToManyField(Question, related_name='tests')
+    questions = models.ManyToManyField(Question, related_name='tests', through="TestsQuestionsRelation")
     duration = models.IntegerField(default=40)
+
+class TestsQuestionsRelation(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('test', 'question')
+
 
 class TestCase(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -44,12 +52,12 @@ class TestCase(models.Model):
 class Clients(models.Model):
     
     isAdmin = models.BooleanField(db_column="IsAdmin",null=False,default=False)
-    password = models.CharField(db_column='Password', max_length=250,null=False)  # Field name made lowercase.
-    firstname = models.CharField(db_column='FirstName', max_length=100,null=False,default='')  # Field name made lowercase.
-    lastname = models.CharField(db_column='LastName', max_length=100,null=False,default='')  # Field name made lowercase.
-    email = models.CharField(db_column='Email', max_length=100,unique=True,null=False)  # Field name made lowercase.
-    isdisabled = models.BooleanField(db_column='isDisabled',default=False) # TO DISABLE OR ENABLE ACCOUNT LOGIN 
-    createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True)  # Field name made lowercase.
+    password = models.CharField(db_column='Password', max_length=250,null=False)  
+    firstname = models.CharField(db_column='FirstName', max_length=100,null=False,default='')
+    lastname = models.CharField(db_column='LastName', max_length=100,null=False,default='')  
+    email = models.CharField(db_column='Email', max_length=100,unique=True,null=False) 
+    isdisabled = models.BooleanField(db_column='isDisabled',default=False) 
+    createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True) 
     updatedate = models.TimeField(db_column='UpdateDate',auto_now=True)
 
 

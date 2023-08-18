@@ -22,5 +22,7 @@ from .views import *
 urlpatterns = [
     path("run", run),
     path("questions", ManageQuestions),
-    path("testCase", ManageTestCases)
+    path("testCase", ManageTestCases),
+    path("test", ManageTests),
+    path("addQuestionToTest", addQuestionToTest)
 ]

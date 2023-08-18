@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import TestsNav from './components/TestsNav'
+import TestsNav from '../../Components/TestsNav'
 import CreateTest from './components/CreateTest'
+import TestsList from './views/TestsList'
 
 const navItemsData = [
     {title: "Active Tests", active: true},
@@ -33,6 +34,7 @@ function TestsPage() {
               <button onClick={() => setIsCreateTestOpen(true)}  className='primaryBtn'>Create Test</button>
             </TopSection>
             <MainSection>
+                <TestsList/>
             </MainSection>
       </Container>
       <CreateTest isOpen={isCreateTestOpen} setIsOpen={setIsCreateTestOpen} />

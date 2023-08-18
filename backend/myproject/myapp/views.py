@@ -6,6 +6,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from .utils import *  
 import traceback
+from django.forms.models import model_to_dict
 
 
 response_data = {
@@ -17,11 +18,16 @@ response_data = {
 def ManageQuestions(req):
     if req.method == "GET":
         id = req.GET.get("id")
-        print("IDDDDDDDDD", id)
+        testid = req.GET.get("test")
+
         if(id):
             res = Question.objects.get(pk = id)
             jsonres = serializers.serialize("json", [res])
             finalData = json.loads(jsonres)[0]
+        elif(testid):
+            test = Test.objects.get(id=testid)
+            questions = test.questions.all()
+            finalData = json.loads(serializers.serialize("json", questions))
         else:
             res = Question.objects.all()
             jsonres = serializers.serialize("json", res)
@@ -116,5 +122,70 @@ def run(req):
             print(traceback.format_exc())                           
             response_data["message"] = str(e)
             return JsonResponse(response_data, status=500,  safe=True)
+        
+
+@csrf_exempt
+def ManageTests(req):
+    msg = {"message": "", "success": False}
+    if req.method == "POST":
+        body = json.loads(req.body)
+        try:
+            savedData = Test.objects.create(
+                title = body["title"],
+                role = body["role"],
+                public= body["isPublic"],
+                duration = body["duration"]
+            )
+            msg["message"] = "Test Added successfully"
+            msg["result"] = model_to_dict(savedData)
+            msg["success"] = True
+            return JsonResponse(msg, status = 200)
+        except Exception as e:
+            print(e)
+            msg["message"] = "Internal server error"
+            return JsonResponse(msg, status = 500)
+        
+    if req.method == "GET":
+        try:
+            id = req.GET.get("id")
+            if id:
+                print("id", id)
+                data = Test.objects.filter(pk=id).values().first()
+            else:
+                data = list(Test.objects.all().values())
+
+            return JsonResponse({"result": data, "success": True}, status=200)
+            
+        except Exception as e:
+            print("Test get", e)
+            return JsonResponse({"message": "Internal server error"}, status=500)
+
     
 
+@csrf_exempt
+def addQuestionToTest(request):
+    msg = {"message": "", "success": False}
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            test_id = body.get('test')
+            question_id = body.get('question')
+            
+            test = Test.objects.get(pk=test_id)
+            question = Question.objects.get(pk=question_id)
+            
+            test.questions.add(question)   
+            msg["message"] = "Question added to the test successfully."
+            msg["success"] = True
+            return JsonResponse(msg, status=200)
+        except Test.DoesNotExist:
+            msg["message"] = 'Test not found.'
+            return JsonResponse(msg, status=404)
+        except Question.DoesNotExist:
+            msg["message"] = 'Question not found.'
+            return JsonResponse(msg, status=404)
+        except Exception as e:
+            msg["message"] = str(e)
+            return JsonResponse(msg, status=500)
+    else:
+        return JsonResponse({'message': 'Invalid request method.'}, status=400)

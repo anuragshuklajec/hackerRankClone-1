@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { publicRequest } from '../../api'
 import styled from 'styled-components'
-import SingleQuestion from './SingleQuestion'
+import QuestionList from './QuestionList'
 
 const Container = styled.div`
     width: 100%;
@@ -36,11 +36,7 @@ const TopSection = styled.div`
     display: flex;
     justify-content: space-between;
 `
-const MainSection = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-`
+
 const dificulty = ["all",'Easy','Medium','Hard']
 
 function Questions() {
@@ -66,9 +62,7 @@ function Questions() {
                         {dificulty.map(e => <SingleDificulty onClick={() => setDificultyFilter(e)} isactive={(dificultyFIlter === e).toString()} >{e}</SingleDificulty>)}
                     </DeficultyContainer>
                 </TopSection>
-                <MainSection>
-                    {questions.map(e => <SingleQuestion data={e}/>)}
-                </MainSection>
+                <QuestionList data={questions}/>
             </Wrapper>
         </Container>
     )
