@@ -28,6 +28,9 @@ def ManageQuestions(req):
             test = Test.objects.get(id=testid)
             questions = test.questions.all()
             finalData = json.loads(serializers.serialize("json", questions))
+
+
+
         else:
             res = Question.objects.all()
             jsonres = serializers.serialize("json", res)
@@ -58,23 +61,68 @@ def ManageQuestions(req):
 
 @csrf_exempt
 def ManageTestCases(req):
+    
     if req.method == "POST":
+        res = response_data
         data = json.loads(req.body)
 
         question_id = data.get("questionId")
-        tests = data.get("tests")
+        test = data.get("tests")
 
-        testsLength = len(tests)
-        if question_id is not None and testsLength > 0:
-            try:
-                question = Question.objects.get(pk=question_id)
-                for test in tests:
-                    TestCase.objects.create(question=question, input_data=test["input"], expected_output=test["output"], score=test["score"], name=test["name"])   
-                return JsonResponse({"success": True, "message": f"{testsLength} Test case created successfully"}, status=200)
-            except Question.DoesNotExist:
-                return JsonResponse({"success": False, "message": "Question does not exist"}, status=400)
-        else:
+        if question_id is None:
             return JsonResponse({"success": False, "message": "Invalid data. Please provide all required fields."}, status=400)
+        
+        try:
+            question = Question.objects.get(pk=question_id)
+            test_id = test.get("id")
+
+            if not test_id: #if we dont have and id in test object then we create test or update test for that id
+                savedTest = TestCase.objects.create(question=question, input_data=test["input_data"], expected_output=test["expected_output"], score=test["score"], name=test["name"]) 
+                res["message"] = "Test case created successfully"
+            else:
+                savedTest = TestCase.objects.get(pk=test_id, question=question)
+                savedTest.input_data = test["input_data"]
+                savedTest.expected_output = test["expected_output"]
+                savedTest.score = test["score"]
+                savedTest.name = test["name"]
+                savedTest.save()  
+                res["message"] = "Test case updated successfully"
+            
+            res["status"] = True
+            res["res"] = model_to_dict(savedTest)
+            return JsonResponse(res, status=200)
+        except Question.DoesNotExist:
+            res["message"] = "Question does not exist"
+            return JsonResponse(res, status=400)
+        
+    if req.method == "DELETE":
+        res = response_data
+
+        test_id = req.GET.get("id")
+
+        if not test_id:
+            res["message"] = "Please provide a test id to delete it"
+            return JsonResponse(res, status=400)
+
+        try:
+            test_case = TestCase.objects.get(pk=test_id)
+            test_name = test_case.name 
+            test_case.delete()
+            res["message"] = f"{test_name} test deleted successfully!!"
+            res["status"] = True
+            return JsonResponse(res, status=200)
+        
+        except TestCase.DoesNotExist:
+            res["message"] = "Test case does not exist"
+            return JsonResponse(res, status=404)
+        except Exception as e:
+            print(e)
+            res["message"] = "Internal server error"
+            return JsonResponse(res, status=500)
+
+
+            
+            
         
     return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 

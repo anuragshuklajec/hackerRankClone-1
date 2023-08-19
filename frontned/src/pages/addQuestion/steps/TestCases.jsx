@@ -84,7 +84,16 @@ function TestCases({questionPk}) {
 
     const [editIndex, setEditIndex] = useState(null)
 
-    const handleDelete = (index) => setTests(p => p.filter((e, i) => index !== i))
+    const handleDelete = async (index) => {
+        const testid = tests[index].id
+        console.log({testid})
+        try {
+            const {data} = await publicRequest.delete(`/testCase?id=${testid}`)
+            setTests(p => p.filter((e, i) => index !== i))
+        } catch (error) {
+            console.log(error)
+        }
+    }
     
 
     useEffect(() => {
@@ -92,12 +101,12 @@ function TestCases({questionPk}) {
     },[isOpen])
 
     const handleSubmit = async () => {
-        try {
-            const {data} = await publicRequest.post("/testCase", {tests, questionId: questionPk})
-            navigate("/questions")
-        } catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     const {data} = await publicRequest.post("/testCase", {tests, questionId: questionPk})
+        // } catch (error) {
+        //     console.log(error)
+        // }
+        navigate("/questions")
     }
 
     return (
@@ -142,7 +151,7 @@ function TestCases({questionPk}) {
             </MainSection>
             <BtnWrapper><button className='primaryBtn' onClick={handleSubmit} >Save Test</button></BtnWrapper>
         </Container>
-        <AddEditTests isOpen={isOpen} setIsOpen={setIsOpen} tests={tests} setTests={setTests} editIndex={editIndex} setEditIndex={setEditIndex} />
+        <AddEditTests questionPk={questionPk} isOpen={isOpen} setIsOpen={setIsOpen} tests={tests} setTests={setTests} editIndex={editIndex} setEditIndex={setEditIndex} />
       </>
     );
 }

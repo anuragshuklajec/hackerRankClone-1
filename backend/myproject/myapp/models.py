@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models.functions import Coalesce
 from django.db.models import Max,Value
+from django.db.models import Sum
 
 # Create your models here.
 class StrategyName(models.Model):
@@ -22,7 +23,11 @@ class Question(models.Model):
     inputs = models.TextField(null=False)
     starter_code = models.TextField(blank = False)
     created_at = models.DateTimeField(auto_now_add=True)
+    tscore = models.IntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+
     
 class Test(models.Model):
     title = models.CharField(max_length=255)
@@ -49,8 +54,15 @@ class TestCase(models.Model):
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        print("self score", self.score)
+        print("question score", self.question.tscore)
+
+        self.question.tscore = int(self.question.tscore) + int(self.score)
+        self.question.save()
+
 class Clients(models.Model):
-    
     isAdmin = models.BooleanField(db_column="IsAdmin",null=False,default=False)
     password = models.CharField(db_column='Password', max_length=250,null=False)  
     firstname = models.CharField(db_column='FirstName', max_length=100,null=False,default='')
@@ -59,5 +71,33 @@ class Clients(models.Model):
     isdisabled = models.BooleanField(db_column='isDisabled',default=False) 
     createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True) 
     updatedate = models.TimeField(db_column='UpdateDate',auto_now=True)
+
+class Results(models.Model):
+    user = models.ForeignKey(Clients, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    score = models.IntegerField(blank=False)
+
+class QuestionAttempt(models.Model):
+    user = models.ForeignKey(Clients, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    result = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class TestAttempt(models.Model):
+    user = models.ForeignKey(Clients, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    time_taken = models.IntegerField()  
+    score = models.IntegerField()
+    question_attempts = models.ManyToManyField(QuestionAttempt, through="TestQuestionAttemtRelation")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class TestQuestionAttemtRelation(models.Model):
+    tAttempt = models.ForeignKey(TestAttempt, on_delete=models.CASCADE)
+    qAttempt = models.ForeignKey(QuestionAttempt, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('tAttempt', 'qAttempt')
+
 
 

@@ -58,6 +58,7 @@ function ManageTest() {
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   useEffect(() => {
+    setQuestionList([])
     const withFilter = navItems[activeTabIndex].withFilter || false;
 
     (async() => {

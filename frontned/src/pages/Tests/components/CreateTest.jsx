@@ -49,13 +49,14 @@ const MainSection = styled.div`
 `
 
 
-function CreateTest({isOpen, setIsOpen}) {
+function CreateTest({isOpen, setIsOpen, setTests}) {
   const [FormData, setFormData] = useState({title: "", role: "", isPublic: "", duration: 0})
   const handleChange = (e) => setFormData(p => ({...p, [e.target.name]: e.target.value}))
 
   const handleSubmit = async () => {
     try {
         const {data} = await publicRequest.post("/test", {...FormData, isPublic: JSON.parse(FormData.isPublic)})
+        setTests(p => [...p, data.result])
         setIsOpen(false)
     } catch (error) {
         console.log(error)

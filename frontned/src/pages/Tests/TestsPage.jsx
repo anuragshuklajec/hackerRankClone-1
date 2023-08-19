@@ -26,6 +26,11 @@ const MainSection = styled.div`
 function TestsPage() {
   const [navItems, setNavItems] = useState(navItemsData)
   const [isCreateTestOpen, setIsCreateTestOpen] = useState(false)
+  const [tests, setTests] = useState([])
+
+
+
+
   return (
     <>
       <Container>
@@ -34,10 +39,10 @@ function TestsPage() {
               <button onClick={() => setIsCreateTestOpen(true)}  className='primaryBtn'>Create Test</button>
             </TopSection>
             <MainSection>
-                <TestsList/>
+                <TestsList setTests={setTests} tests={tests} />
             </MainSection>
       </Container>
-      <CreateTest isOpen={isCreateTestOpen} setIsOpen={setIsCreateTestOpen} />
+      <CreateTest isOpen={isCreateTestOpen} setIsOpen={setIsCreateTestOpen} setTests={setTests}/>
     </>
   )
 }

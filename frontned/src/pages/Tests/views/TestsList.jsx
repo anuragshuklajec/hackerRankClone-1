@@ -60,9 +60,9 @@ const LeftSide = styled.td`
 `
 
 
-function TestsList() {
+function TestsList({setTests, tests}) {
   const navigate = useNavigate()
-  const [tests, setTests] = useState([])
+
   useEffect(() => {
     (async() => {
         try {

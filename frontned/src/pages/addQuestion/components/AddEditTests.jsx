@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import Modal from '../../../Components/Modal'
 import styled from "styled-components"
 import { edit } from 'ace-builds'
+import { publicRequest } from '../../../api'
 
 const FormWrapper = styled.form`
     display: flex;
@@ -34,34 +35,42 @@ const InputWrapper = styled.div`
     }
 `
 
-const DefaultData = {name: "", input: "", output: "", score: ""}
-function AddEditTests({isOpen, setIsOpen, tests, setTests, editIndex, setEditIndex}) {
+const DefaultData = {name: "", input_data: "", expected_output: "", score: ""}
+function AddEditTests({isOpen, setIsOpen, tests, setTests, editIndex, setEditIndex, questionPk}) {
     const [formData, setFormData] = useState(DefaultData)
 
     useEffect(() => {
-        if(isOpen === false){
-            setFormData(DefaultData)
-        }
-
+        if(isOpen === false) setFormData(DefaultData)
         if(editIndex === null) return 
         setFormData(tests[editIndex])
+        console.log(tests[editIndex])
     },[isOpen, editIndex]) 
 
-    const handleTestAdd = (e, type) => {
+    const handleTestAdd = async (e, type) => {
         e.preventDefault()
         console.log(type)
-        if(type ==="add"){
-            setTests(p => [...p, formData])
-        } else if( type === "edit"){
-            setTests(p => {
-                const newData = [...p]
-                newData[editIndex] = formData
-                return newData
-            })
-            setEditIndex(null)
+
+        try {
+            console.log({questionPk})
+            const {data} = await publicRequest.post("/testCase", {tests : formData, questionId: questionPk})
+            if(type ==="add"){
+                setTests(p => [...p, data.res])
+            } else if( type === "edit"){
+                setTests(p => {
+                    const newData = [...p]
+                    newData[editIndex] = formData
+                    return newData
+                })
+                setEditIndex(null)
+            }
+        } catch (error) {
+            console.log(error)
         }
+
         setIsOpen(false)
         setFormData(DefaultData)
+
+        
     }
 
 
@@ -83,11 +92,11 @@ function AddEditTests({isOpen, setIsOpen, tests, setTests, editIndex, setEditInd
                 <div>
                     <InputWrapper>
                         <label>Input</label>
-                        <textarea style={{resize: "vertical"}} className='primaryInput' name='input' value={formData.input} onChange={handleChange} required />
+                        <textarea style={{resize: "vertical"}} className='primaryInput' name='input_data' value={formData.input_data} onChange={handleChange} required />
                     </InputWrapper>
                     <InputWrapper>
                         <label>Output</label>
-                        <textarea style={{resize: "vertical"}} className='primaryInput' name='output' value={formData.output} onChange={handleChange} required />
+                        <textarea style={{resize: "vertical"}} className='primaryInput' name='expected_output' value={formData.expected_output} onChange={handleChange} required />
                     </InputWrapper>
                 </div>
                 <button style={{border: "none"}}  className='primaryBtn'  >{editIndex !== null ? "Update": "add"}</button>
