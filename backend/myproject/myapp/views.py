@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils import *  
 import traceback
 from django.forms.models import model_to_dict
+from django.db.models import Count
+from authentication.decorators import *
 
 
 response_data = {
@@ -127,6 +129,7 @@ def ManageTestCases(req):
     return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
 @csrf_exempt 
+@checkSession
 def run(req):
     if req.method == "POST":
         response = {"success": True, "message": None}
@@ -137,6 +140,8 @@ def run(req):
             
             question = Question.objects.get(pk = data["questionId"])
             tests = TestCase.objects.filter(question=question)
+
+            totalScore = 0
 
             testResults = []
             for test in tests:
@@ -161,9 +166,20 @@ def run(req):
                     }
                     break
                 else:
+                    if(res["success"]):
+                        totalScore = totalScore + int(test.score)
+                    
                     testResults.append(res)
                     response["message"] = testResults
-                
+
+            if(response["success"]):
+                user = Clients.objects.get(pk = req.session.get("ID"))
+                QuestionAttempt.objects.create(
+                    user = user,
+                    question = question,
+                    result = totalScore,
+                )
+            
             return JsonResponse(response, status=200)
         except Exception as e:
             print("Exception:", e)       
@@ -200,7 +216,7 @@ def ManageTests(req):
                 print("id", id)
                 data = Test.objects.filter(pk=id).values().first()
             else:
-                data = list(Test.objects.all().values())
+                data = list(Test.objects.annotate(num_questions=Count('questions')).values())
 
             return JsonResponse({"result": data, "success": True}, status=200)
             
@@ -211,9 +227,37 @@ def ManageTests(req):
     
 
 @csrf_exempt
-def addQuestionToTest(request):
-    msg = {"message": "", "success": False}
+def manageTestQuestions(request):
+    if request.method == "DELETE":
+        msg = {"message": "", "success": False}
+        try:
+            testid = request.GET.get('testid')
+            questionid = request.GET.get('qid')
+
+            test = Test.objects.get(pk=testid)
+            question = test.questions.get(pk=questionid)
+            test.questions.remove(question)
+            msg["message"] = "Question deleted successfully"
+            msg["success"] = True
+            return HttpResponse("Question deleted successfully", status=200)
+            
+        except Test.DoesNotExist:
+            msg["message"] = "Tst not found"
+            return HttpResponse(msg, status=404)
+            
+        except Question.DoesNotExist:
+            msg["message"] = "Question not found"
+            return HttpResponse(msg, status=404)
+            
+        except Exception as e:
+            print(e)
+            msg["message"] = "An error occured"
+            return HttpResponse(msg, status=500)
+
+
+
     if request.method == "POST":
+        msg = {"message": "", "success": False}
         try:
             body = json.loads(request.body)
             test_id = body.get('test')

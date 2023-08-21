@@ -75,7 +75,7 @@ function TestsList({setTests, tests}) {
   },[])
 
 
-  const handleDelete = () => {
+  const handleDelete = async (id) => {
 
   }
 
@@ -97,7 +97,7 @@ function TestsList({setTests, tests}) {
                   <p className='title' >{e.title}</p>
                   <small>{e.role}</small>
                   <div>
-                    <small><BsListCheck/>{e.questions?.length || 10}</small>
+                    <small><BsListCheck/>{e.num_questions || 0}</small>
                     <small><BiTimer/>{e.duration}</small>
                   </div>
                 </LeftSide>

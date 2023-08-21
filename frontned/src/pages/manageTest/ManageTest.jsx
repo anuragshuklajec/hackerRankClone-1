@@ -85,7 +85,7 @@ function ManageTest() {
         <MainContainer>
             <TestsNav items={navItems} setItems={setNavItems} setIndex={setActiveTabIndex} />
             <Wrapper>
-              <Component data={questionList} withControls={true} test={id} />
+              <Component data={questionList} setQuestionList={setQuestionList} withControls={true} test={id} />
             </Wrapper>
         </MainContainer>
     </Container>

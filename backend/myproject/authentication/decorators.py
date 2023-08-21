@@ -5,19 +5,15 @@ from django.http import JsonResponse
 
 
 def checkSession(func):
-    """helper function to CHECK SESSION OF USER"""
     @wraps(func)  # used for copying func metadata
     def wrapper(*args, **kwargs):
-        msg={"status":"","errorCode":"","reason":"","result":"","transactionID":0,"redirectURL":""}
-        msg['transactionID']=time.time()
+        msg= {"success": False, "message": None}
 
         args[0].session.clear_expired() 
         
         if 'ID' not in args[0].session.keys() :  
-            msg["status"]="error"
-            msg["reason"]="Unauthorized. Please login or register first!!!"
-            msg["errorCode"]=101      
-            return JsonResponse(data=msg,safe=False)
+            msg["message"]="Unauthorized. Please login or register first!!!"
+            return JsonResponse(msg,safe=False)
         else :  
             try :
                 s = Session.objects.get(pk=args[0].session.session_key)   
@@ -26,20 +22,14 @@ def checkSession(func):
                     result = func(*args, **kwargs)
                     return result
                 else :
-                    msg["status"]="error"
-                    msg["reason"]="Unauthorized. Please login or register first!!!"
-                    msg["errorCode"]=101 
-                    return JsonResponse(data=msg,safe=False)  
+                    msg["message"]="Unauthorized. Please login or register first!!!"
+                    return JsonResponse(msg,safe=False)  
 
             except Exception as e :
                 print(e)
-                msg["status"]="error"
-                msg["reason"]="Unauthorized. Please login or register first!!!"
-                msg["errorCode"]=101 
-                return JsonResponse(data=msg,safe=False)  
-                return False              
+                msg["message"]="Unauthorized. Please login or register first!!!"
+                return JsonResponse(msg,safe=False)               
                                
-        return result
     return wrapper
 
 

@@ -24,7 +24,8 @@ const RegisterPage = ({setIsRegister}) => {
 
   const validate = () => {
     const emailRegex = "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"; // eslint-disable-line
-    if(!formValues.name.split(" ").length > 3) return {message: "Please enter your full name"}
+    console.log(formValues.name.split(" ").length)
+    if(formValues.name.split(" ").length < 2) return {message: "Please enter your full name"}
     if(!formValues.email.match(emailRegex)) return {message: "emai that you entered is not valid"}
     if(formValues.password.length < 8) return {message: "Password must be atlist 8 charectors"}
     if(formValues.password !== formValues.confirmPassword) return  {message: "Password with confirm password dosent matched"}

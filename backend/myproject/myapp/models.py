@@ -72,10 +72,8 @@ class Clients(models.Model):
     createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True) 
     updatedate = models.TimeField(db_column='UpdateDate',auto_now=True)
 
-class Results(models.Model):
-    user = models.ForeignKey(Clients, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    score = models.IntegerField(blank=False)
+
+
 
 class QuestionAttempt(models.Model):
     user = models.ForeignKey(Clients, on_delete=models.CASCADE)
@@ -98,6 +96,4 @@ class TestQuestionAttemtRelation(models.Model):
 
     class Meta:
         unique_together = ('tAttempt', 'qAttempt')
-
-
 

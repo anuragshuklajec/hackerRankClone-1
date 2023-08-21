@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { AiOutlineDelete } from "react-icons/ai"
+import { publicRequest } from '../../../api';
 
 const TableWrapper = styled.div`
   font-family: Arial, sans-serif;
@@ -35,7 +36,18 @@ const TableCell = styled.td`
   }
 `;
 
-const QuestionsListForManage = ({data}) => {
+const QuestionsListForManage = ({data, setQuestionList, test}) => {
+
+  const handleDelete = async (questionId) => {
+    try {
+      const {data} = await publicRequest.delete(`/test/question?qid=${questionId}&testid=${test}`)
+      setQuestionList( p => p.filter(e => e.pk !== questionId ))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   return (
     <TableWrapper>
       <Table>
@@ -56,7 +68,7 @@ const QuestionsListForManage = ({data}) => {
                       <TableCell>{e.fields.recommended_time}</TableCell>
                       <TableCell>{e.fields.difficulty}</TableCell>
                       <TableCell>{e.fields.title}</TableCell>
-                      <TableCell><AiOutlineDelete/></TableCell>
+                      <TableCell><AiOutlineDelete onClick={() => handleDelete(e.pk)} /></TableCell>
                     </tr>
           ))}
 

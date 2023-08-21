@@ -111,6 +111,7 @@ table {
     font-weight: 500;
     border-radius: 0.2rem;
     cursor: pointer;
+    border: none;
 }
 
 .noBorder{

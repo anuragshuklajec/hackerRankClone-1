@@ -46,7 +46,7 @@ function QuestionList({ data, withControls = false, test }) {
 
   const handleAddQuestion = async (questionId) => {
     try {
-      const {data} = await publicRequest.post("/addQuestionToTest", {test, question: questionId})
+      const {data} = await publicRequest.post("/test/question", {test, question: questionId})
     } catch (error) {
       console.log(error)
     }
