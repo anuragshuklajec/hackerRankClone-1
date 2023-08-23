@@ -9,6 +9,8 @@ import traceback
 from django.forms.models import model_to_dict
 from django.db.models import Count
 from authentication.decorators import *
+import secrets
+from django.core.mail import send_mail
 
 
 response_data = {
@@ -214,7 +216,8 @@ def ManageTests(req):
             id = req.GET.get("id")
             if id:
                 print("id", id)
-                data = Test.objects.filter(pk=id).values().first()
+                data = Test.objects.filter(pk=id).annotate(question_length=models.Count('questions')).values().first()
+                data['questionLength'] = data.pop('question_length')
             else:
                 data = list(Test.objects.annotate(num_questions=Count('questions')).values())
 
@@ -281,3 +284,59 @@ def manageTestQuestions(request):
             return JsonResponse(msg, status=500)
     else:
         return JsonResponse({'message': 'Invalid request method.'}, status=400)
+
+@csrf_exempt
+def testInvitation(request):
+    msg = {"message": "", "success": False}
+    if request.method == "POST":
+        try:
+            __body = json.loads(request.body)
+            test_id = __body.get('testid')
+            client_email = __body.get('users')
+            title = __body.get("title")
+            desc = __body.get("desc")
+
+            test = Test.objects.get(id=test_id)
+            # client = Clients.objects.get(email=client_email)
+            # invitation = TestInvitation(client=client, test=test)
+            # invitation.save()
+
+            reset_url = f"{request.META.get('HTTP_REFERER')}test/{test_id}"  
+
+            send_mail(
+                subject = 'Test Invitation', 
+                html_message = generateMail(test, title, desc, reset_url), 
+                from_email = 'noreply.srhft@gmail.com', 
+                recipient_list = client_email
+            )
+
+            msg["message"] = "Invitation sent successfully"
+            msg["success"] = True
+            return JsonResponse(msg, status=200)
+
+        except Exception as e:
+            msg["message"] = str(e)
+            return JsonResponse(msg, status=404)
+        
+    elif request.method == 'GET':
+        try:
+            client_email = request.GET.get('email')
+            test_id = request.GET.get('testid')
+            client = Clients.objects.get(email=client_email)
+            test = Test.objects.get(id = test_id)
+            if request.session['email'] == client_email:
+                test_invitation = TestInvitation.objects.get(test=test,client=client)
+                msg["message"] = "Thanks for accepting the invite"
+                msg["success"] = True
+                return JsonResponse(msg, status=200)
+            else:
+                msg["message"] = "Login First !!"
+                return JsonResponse(msg, status=404)
+        except Exception as e:
+            msg["message"] = str(e)
+            return JsonResponse(msg, status=404)
+
+                
+
+        
+

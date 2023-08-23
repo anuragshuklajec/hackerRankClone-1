@@ -25,5 +25,6 @@ urlpatterns = [
     path("testCase", ManageTestCases),
     path("test", ManageTests),
     path("test/question", manageTestQuestions),
-    path("test/question", manageTestQuestions)
+    path("test/question", manageTestQuestions),
+    path("testInvitation",testInvitation)
 ]

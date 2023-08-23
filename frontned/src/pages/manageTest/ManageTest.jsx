@@ -7,6 +7,7 @@ import { publicRequest } from '../../api'
 import TestsNav from '../../Components/TestsNav'
 import QuestionsListForManage from './components/QuestionsListForManage'
 import Settings from './components/Settings'
+import AddUserToTest from './components/AddUserToTest'
 
 const Container = styled.div``
 const TopContainer = styled.div`
@@ -74,21 +75,26 @@ function ManageTest() {
 
   const Component = navItems[activeTabIndex].component
 
-  return (
-    <Container>
-        <TopContainer>
-            <Title>{test?.title}</Title>
-            <Options>
-                <button className='primaryBtn' >INVITE</button>
-            </Options>
-        </TopContainer>
-        <MainContainer>
-            <TestsNav items={navItems} setItems={setNavItems} setIndex={setActiveTabIndex} />
-            <Wrapper>
-              <Component data={questionList} setQuestionList={setQuestionList} withControls={true} test={id} />
-            </Wrapper>
-        </MainContainer>
-    </Container>
+
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
+  return test && (
+    <>
+      <Container>
+          <TopContainer>
+              <Title>{test?.title}</Title>
+              <Options>
+                  <button className='primaryBtn' onClick={() => setIsInviteOpen(true)} >INVITE</button>
+              </Options>
+          </TopContainer>
+          <MainContainer>
+              <TestsNav items={navItems} setItems={setNavItems} setIndex={setActiveTabIndex} />
+              <Wrapper>
+                <Component data={questionList} setQuestionList={setQuestionList} withControls={true} test={id} />
+              </Wrapper>
+          </MainContainer>
+      </Container>
+      <AddUserToTest setIsOpen={setIsInviteOpen} isOpen={isInviteOpen} testInfo={test} />
+    </>
   )
 }
 

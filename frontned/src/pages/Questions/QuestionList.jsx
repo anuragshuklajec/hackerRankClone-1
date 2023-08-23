@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { styled } from 'styled-components'
 import { publicRequest } from '../../api'
+import { toast } from 'react-hot-toast'
 
 const MainSection = styled.div`
     display: flex;
@@ -44,9 +45,16 @@ const Right = styled.div`
 function QuestionList({ data, withControls = false, test }) {
   const navigate = useNavigate()
 
-  const handleAddQuestion = async (questionId) => {
+  const handleAddQuestion = async (questionId ,qinfo) => {
     try {
-      const {data} = await publicRequest.post("/test/question", {test, question: questionId})
+      await toast.promise(
+        publicRequest.post("/test/question", { test, question: questionId }),
+        {
+          loading: 'Adding question...',
+          success: <b>{qinfo.fields.title} added successfully!</b>,
+          error: <b>Could not add question.</b>,
+        }
+      );
     } catch (error) {
       console.log(error)
     }
@@ -65,7 +73,7 @@ function QuestionList({ data, withControls = false, test }) {
           </Left>
           <Right>
             {withControls ?
-            <button className='primaryBtn' onClick={() => handleAddQuestion(e.pk)} >add Question</button>
+            <button className='primaryBtn' onClick={() => handleAddQuestion(e.pk ,e)} >add Question</button>
             :
             <button className='primaryBtn' onClick={() => navigate(`/question/${e.pk}`)} >Solve Question</button>
           }

@@ -8,6 +8,7 @@ admin.site.register(Test)
 admin.site.register(Clients)
 admin.site.register(TestsQuestionsRelation)
 admin.site.register(QuestionAttempt)
+admin.site.register(TestInvitation)
 
 
 

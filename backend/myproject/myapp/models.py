@@ -68,11 +68,15 @@ class Clients(models.Model):
     firstname = models.CharField(db_column='FirstName', max_length=100,null=False,default='')
     lastname = models.CharField(db_column='LastName', max_length=100,null=False,default='')  
     email = models.CharField(db_column='Email', max_length=100,unique=True,null=False) 
+    tests_invited = models.ManyToManyField(Test, related_name='invited_clients', through="TestInvitation")
     isdisabled = models.BooleanField(db_column='isDisabled',default=False) 
     createddate = models.DateTimeField(db_column='CreatedDate',auto_now_add=True) 
     updatedate = models.TimeField(db_column='UpdateDate',auto_now=True)
 
 
+class TestInvitation(models.Model):
+    client = models.ForeignKey(Clients, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
 
 
 class QuestionAttempt(models.Model):

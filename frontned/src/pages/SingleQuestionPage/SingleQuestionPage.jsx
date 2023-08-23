@@ -20,6 +20,7 @@ const Wrapper = styled.div`
 
 const TopSection = styled.div`
     display: flex;
+    gap: 1rem;
     >div{
         width: 50%;
     }
