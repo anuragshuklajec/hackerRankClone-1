@@ -11,6 +11,7 @@ from django.db.models import Count
 from authentication.decorators import *
 import secrets
 from django.core.mail import send_mail
+from uuid import uuid4
 
 
 response_data = {
@@ -296,12 +297,16 @@ def testInvitation(request):
             title = __body.get("title")
             desc = __body.get("desc")
 
-            test = Test.objects.get(id=test_id)
-            # client = Clients.objects.get(email=client_email)
-            # invitation = TestInvitation(client=client, test=test)
-            # invitation.save()
+            invitations = []
+            test = Test.objects.get(pk = test_id)
+            uniqueid = uuid4()
+            for email in client_email:
+                invitation = TestInvitation(test=test, client_email=email, token = uniqueid)
+                invitations.append(invitation)
+            
+            TestInvitation.objects.bulk_create(invitations)
 
-            reset_url = f"{request.META.get('HTTP_REFERER')}test/{test_id}"  
+            reset_url = f"{request.META.get('HTTP_REFERER')}test/{test_id   }/{uniqueid}"  
 
             send_mail(
                 subject = 'Test Invitation', 
@@ -320,21 +325,17 @@ def testInvitation(request):
         
     elif request.method == 'GET':
         try:
-            client_email = request.GET.get('email')
             test_id = request.GET.get('testid')
-            client = Clients.objects.get(email=client_email)
-            test = Test.objects.get(id = test_id)
-            if request.session['email'] == client_email:
-                test_invitation = TestInvitation.objects.get(test=test,client=client)
-                msg["message"] = "Thanks for accepting the invite"
-                msg["success"] = True
-                return JsonResponse(msg, status=200)
-            else:
-                msg["message"] = "Login First !!"
-                return JsonResponse(msg, status=404)
-        except Exception as e:
-            msg["message"] = str(e)
+            TestInvitation.objects.get(test=test_id,client_email=request.session['email'])
+            msg["success"] = True
+            return JsonResponse(msg, status=200)
+        except TestInvitation.DoesNotExist:
+            msg["success"] = False
             return JsonResponse(msg, status=404)
+        except Exception as e:
+            msg["success"] = False
+            msg["message"] = str(e)
+            return JsonResponse(msg, status=500)
 
                 
 

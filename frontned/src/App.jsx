@@ -47,7 +47,7 @@ function App() {
           <Route path="/tests" element={<TestsPage/>}/>
           <Route path="/test/manage/:id" element={<ManageTest/>}/>
         </Route>
-        <Route path="/test/:id" element={<StartTest/>}/>
+        <Route path="/test/:testid/:token" element={<StartTest/>}/>
         <Route path="/test/attempt/:id" element={<AttemptTest/>}/>
 
 
