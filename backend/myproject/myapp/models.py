@@ -90,8 +90,10 @@ class TestAttempt(models.Model):
     user = models.ForeignKey(Clients, on_delete=models.CASCADE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     time_taken = models.IntegerField()  
-    score = models.IntegerField()
+    score = models.IntegerField(default=0)
     question_attempts = models.ManyToManyField(QuestionAttempt, through="TestQuestionAttemtRelation")
+    contact_email = models.TextField(blank=False)
+    experience=models.IntegerField(default=0, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
