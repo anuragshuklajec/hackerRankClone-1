@@ -182,7 +182,27 @@ def run(req):
                     question = question,
                     result = totalScore,
                 )
-            
+                testid = data.get('testid',None)
+                if testid:
+                    test = test.objects.filter(pk = testid)
+                    if not test : 
+                        response["success"] = False
+                        response["message"] = "Test not found"
+                        return JsonResponse(response, status=404)
+                    
+                    testInvitation = TestInvitation.objects.filter(test=test,client_email = user.email)
+                    if not testInvitation:
+                        response["success"] = False
+                        response["message"] = "Prohibted"
+                        return JsonResponse(response, status=404)
+
+                    testAttempt = TestAttempt.objects.update_or_create(test=test,user=user)
+                    testAttempt.score += totalScore
+                    testAttempt.save()
+                    response["success"] = True
+                    return JsonResponse(response, status=200)
+
+
             return JsonResponse(response, status=200)
         except Exception as e:
             print("Exception:", e)       
@@ -336,6 +356,41 @@ def testInvitation(request):
             msg["success"] = False
             msg["message"] = str(e)
             return JsonResponse(msg, status=500)
+
+
+@csrf_exempt
+def testAttempt(request):
+    msg = {"message": "", "success": False}
+    if request.method == "POST":
+        try:
+            __body = json.loads(request.body)
+            testId = __body.get('testId')
+            email = __body.get('email')
+
+            test = Test.objects.filter(pk = testId)
+            if not test :
+                msg["message"]  = "Test doesn't exists"
+                return JsonResponse(msg,status=404)
+            
+            userInvited = TestInvitation.objects.filter(test=test,client_email = email)
+            if not userInvited :
+                msg["message"] = "Prohibted"
+                return JsonResponse(msg, status=404)
+            
+            msg["success"] = True
+            return JsonResponse(msg, status=404)
+        except Exception as e:
+            msg["message"] = str(e)
+            return JsonResponse(msg, status=404)
+            
+
+
+                
+                    
+
+                        
+ 
+
 
                 
 

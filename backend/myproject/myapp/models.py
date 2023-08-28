@@ -83,8 +83,9 @@ class TestInvitation(models.Model):
 class QuestionAttempt(models.Model):
     user = models.ForeignKey(Clients, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    result = models.TextField()
+    result = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class TestAttempt(models.Model):
     user = models.ForeignKey(Clients, on_delete=models.CASCADE)
